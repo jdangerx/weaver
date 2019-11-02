@@ -59,12 +59,13 @@ def create_app():
         logout_user()
         return redirect(url_for("login"))
 
-    @app.route("/post/<reply_to>", methods=["GET", "POST"])
+    @app.route("/post", methods=["GET", "POST"])
+    @app.route("/post/<parent>", methods=["GET", "POST"])
     @login_required
-    def submit_post(reply_to):
+    def submit_post(parent=None):
         form = PostForm()
         if form.validate_on_submit():
-            new_post = Post(body=form.body.data, parent=reply_to)
+            new_post = Post(body=form.body.data, parent=parent)
             new_post.author = current_user
             new_post.make_digest()
             db.session.add(new_post)
