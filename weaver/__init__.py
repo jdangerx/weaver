@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, request
 
 
 def create_app(test_config=None):
@@ -12,7 +12,7 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY="dev",
         SQLALCHEMY_DATABASE_URI=f"sqlite:///{dbpath}",
-        SQLALCHEMY_TRACK_CONFIGURATIONS=False,
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
     )
 
     from weaver.model import db, migrate
@@ -32,8 +32,8 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route("/hello")  # does this have to be created within the function?
-    def hello():
-        return f"Hello, world! My instance folder is {app.instance_path}"
+    from weaver import auth
+
+    app.register_blueprint(auth.bp)
 
     return app
